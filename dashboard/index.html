@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Digital Multimeter</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="header-left">
+            <i class="fas fa-microchip"></i>
+            <div>
+                <h1>Smart Digital Multimeter</h1>
+                <span>Arduino-Based Measurement System</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="status-badge" id="connectionStatus">
+                <span class="dot"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+            <div class="timestamp">
+                <i class="fas fa-clock"></i>
+                <span id="lastUpdate">--:--:--</span>
+            </div>
+            <button class="btn-settings" onclick="toggleSettings()">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ===== SETTINGS PANEL ===== -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-content">
+            <h3><i class="fas fa-cog"></i> Settings</h3>
+            <div class="settings-grid">
+
+                <div class="setting-group">
+                    <label>Server IP</label>
+                    <div class="input-row">
+                        <input type="text" id="serverIP" placeholder="192.168.1.100" />
+                        <button onclick="saveIP()">Save</button>
+                    </div>
+                    <span class="setting-hint">Arduino & PC must be on same Wi-Fi</span>
+                </div>
+
+                <div class="setting-group">
+                    <label>Voltage Alarm (V)</label>
+                    <div class="input-row">
+                        <input type="number" id="voltageAlarm" value="20" min="0" max="25" />
+                        <button onclick="saveAlarms()">Save</button>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label>Current Alarm (A)</label>
+                    <div class="input-row">
+                        <input type="number" id="currentAlarm" value="4" min="0" max="5" />
+                        <button onclick="saveAlarms()">Save</button>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label>Error Alarm (%)</label>
+                    <div class="input-row">
+                        <input type="number" id="errorAlarm" value="5" min="0" max="100" />
+                        <button onclick="saveAlarms()">Save</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ALARM BANNER ===== -->
+    <div class="alarm-banner" id="alarmBanner">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span id="alarmText">Warning!</span>
+        <button onclick="dismissAlarm()"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- ===== MAIN ===== -->
+    <main class="container">
+
+        <!-- ===== MEASUREMENT CARDS ===== -->
+        <section class="cards-grid">
+
+            <!-- Voltage Card -->
+            <div class="card voltage" id="voltageCard">
+                <div class="card-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="card-info">
+                    <span class="card-label">DC Voltage</span>
+                    <div class="card-value">
+                        <span id="voltageValue">0.00</span>
+                        <span class="unit">V</span>
+                    </div>
+                    <div class="card-meta">
+                        <span>Avg: <strong id="avgVoltage">0.00</strong> V</span>
+                        <span>Range: 0–25V</span>
+                    </div>
+                </div>
+                <div class="card-bar">
+                    <div class="bar-fill voltage-fill" id="voltageBar"></div>
+                </div>
+            </div>
+
+            <!-- Current Card -->
+            <div class="card current" id="currentCard">
+                <div class="card-icon">
+                    <i class="fas fa-wave-square"></i>
+                </div>
+                <div class="card-info">
+                    <span class="card-label">Current</span>
+                    <div class="card-value">
+                        <span id="currentValue">0.00</span>
+                        <span class="unit">A</span>
+                    </div>
+                    <div class="card-meta">
+                        <span>Avg: <strong id="avgCurrent">0.00</strong> A</span>
+                        <span>Range: 0–5A</span>
+                    </div>
+                </div>
+                <div class="card-bar">
+                    <div class="bar-fill current-fill" id="currentBar"></div>
+                </div>
+            </div>
+
+            <!-- Resistance Card -->
+            <div class="card resistance">
+                <div class="card-icon">
+                    <i class="fas fa-sliders-h"></i>
+                </div>
+                <div class="card-info">
+                    <span class="card-label">Resistance</span>
+                    <div class="card-value">
+                        <span id="resistanceValue">0</span>
+                        <span class="unit">Ω</span>
+                    </div>
+                    <div class="card-meta">
+                        <span>Wide Ohmic Range</span>
+                    </div>
+                </div>
+                <div class="card-bar">
+                    <div class="bar-fill resistance-fill" id="resistanceBar"></div>
+                </div>
+            </div>
+
+            <!-- Error Card -->
+            <div class="card error" id="errorCard">
+                <div class="card-icon">
+                    <i class="fas fa-percent"></i>
+                </div>
+                <div class="card-info">
+                    <span class="card-label">Error Rate</span>
+                    <div class="card-value">
+                        <span id="errorValue">0.00</span>
+                        <span class="unit">%</span>
+                    </div>
+                    <div class="card-meta">
+                        <span>Based on 10 samples</span>
+                    </div>
+                </div>
+                <div class="card-bar">
+                    <div class="bar-fill error-fill" id="errorBar"></div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ===== CHARTS ===== -->
+        <section class="charts-grid">
+
+            <div class="chart-box">
+                <div class="chart-header">
+                    <h3><i class="fas fa-bolt"></i> Voltage History</h3>
+                    <span class="chart-badge voltage-badge">Live</span>
+                </div>
+                <canvas id="voltageChart"></canvas>
+            </div>
+
+            <div class="chart-box">
+                <div class="chart-header">
+                    <h3><i class="fas fa-wave-square"></i> Current History</h3>
+                    <span class="chart-badge current-badge">Live</span>
+                </div>
+                <canvas id="currentChart"></canvas>
+            </div>
+
+        </section>
+
+        <!-- ===== DATA LOG TABLE ===== -->
+        <section class="log-section">
+            <div class="log-header">
+                <h3><i class="fas fa-table"></i> Data Log</h3>
+                <div class="log-buttons">
+                    <button class="btn-download" onclick="downloadCSV()">
+                        <i class="fas fa-download"></i> Download CSV
+                    </button>
+                    <button class="btn-clear" onclick="clearLog()">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Time</th>
+                            <th>Voltage (V)</th>
+                            <th>Current (A)</th>
+                            <th>Resistance (Ω)</th>
+                            <th>Avg Voltage (V)</th>
+                            <th>Avg Current (A)</th>
+                            <th>Error (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logBody">
+                        <tr class="empty-row">
+                            <td colspan="8">Waiting for data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <span>Smart Digital Multimeter © 2025 — Elsewedy University of Technology</span>
+        <span>Supervised by: Prof. Dalia Elsheakh</span>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
