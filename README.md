@@ -136,12 +136,12 @@ Once running, the Arduino sends JSON data every second:
 |------|------|
 | **Mustafa Nabil** | Software Lead — Full Server Development, Dashboard, Firmware, Wi-Fi Integration |
 | **Omar Ahmed** | Software Assistant — Arduino Library Research, Testing, Debugging |
-| Khaled Abdelkhaleq | Team Member |
-| Farah Othman | Team Member |
-| Maryem Shazly | Team Member |
-| Yousef Mohamed | Team Member |
-| Mohamed Mostafa | Team Member |
-| Amr Khaled | Team Member |
+| Khaled Abdelkhaleq | Hardware & Circuit Design |
+| Yousef Mohamed | Hardware & Circuit Design |
+| Maryem Shazly | 3D Design |
+| Farah Othman | 3D Design |
+| Amr Khaled | System Integration |
+| Mohamed Mostafa | System Integration |
 
 ---
 
